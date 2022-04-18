@@ -31,3 +31,22 @@ jobs:
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/paddlfly-backend:${{ env.TAG }}
           context: .
+
+  # Deploy to main
+  deploy:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    needs: [build]
+    env:
+      KUBECONFIG: /root/.kubeconfig
+    steps:
+      - name: Set container tag
+        run: echo "TAG=${GITHUB_REF##*/}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
+      - name: Get cluster credentials from AWS EKS
+        run: |
+          aws eks update-kubeconfig --region eu-central-1 --name paddlfly-prod
+          kubectl config use-context arn:aws:eks:eu-central-1:575229819261:nodegroup/paddlfly-prod
+      - name: Update the image on the deployments and wait for success
+        run: |
+          kubectl set image deployment paddlfly-backend paddlfly-backend=${{ env.DOCKER_REGISTRY }}/paddlfly-backend:${{ env.TAG }} -n prod &&
+          kubectl rollout status deployment/paddlfly-backend -n prod
