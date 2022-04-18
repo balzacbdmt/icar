@@ -34,12 +34,11 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-      - name: Build, tag, and push image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: paddlfly-backend
-        run: |
-          docker build -t ${{ env.DOCKER_REGISTRY }}$ECR_REPOSITORY:${{ env.TAG }} .
-          echo "Pushing image to ECR..."
-          docker push ${{ env.DOCKER_REGISTRY }}/$ECR_REPOSITORY:${{ env.TAG }}
-          echo "::set-output name=image::${{ env.DOCKER_REGISTRY }}/$ECR_REPOSITORY:${{ env.TAG }}"
+      - name: Build and push container
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          file: Dockerfile
+          tags: |
+            ${{ env.DOCKER_REGISTRY }}/paddlfly-backend:${{ env.TAG }}
+          context: .
