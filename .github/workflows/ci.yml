@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set container tag
+        run: echo "TAG=${GITHUB_REF##*/}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v2
       - name: Configure AWS credentials
@@ -27,5 +29,5 @@ jobs:
           push: true
           file: Dockerfile
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/paddlfly-backend:latest
+            ${{ steps.login-ecr.outputs.registry }}/paddlfly-backend:${{ env.TAG }}
           context: .
