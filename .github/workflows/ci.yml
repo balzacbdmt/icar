@@ -1,28 +1,16 @@
-# This is a basic workflow to help you get started with Actions
+name: paddlfly-CI
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [main]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 env:
   AWS_REGION: eu-central-1
   DOCKER_REGISTRY: 575229819261.dkr.ecr.eu-central-1.amazonaws.com
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    runs-on: [self-hosted, linux]
     steps:
       - name: Set container tag
         run: echo "TAG=${GITHUB_REF##*/}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
