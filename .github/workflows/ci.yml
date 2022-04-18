@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     steps:
       - name: Set container tag
         run: echo "TAG=${GITHUB_REF##*/}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
